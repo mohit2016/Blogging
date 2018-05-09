@@ -1,12 +1,14 @@
 // Import Necessary Files
-var express  = require('express');
-    mongoose = require("mongoose");
-
+var express    = require('express'),
+    mongoose   = require("mongoose"),
+    bodyParser = require("body-parser");
 
 var app = express();
 
 // Use EJS as viewing template 
 app.set('view engine','ejs');
+
+app.use(bodyParser.urlencoded({extended:false}));
 
 mongoose.connect("mongodb://localhost/Blogging"); //Database Connection Call
 
@@ -53,7 +55,29 @@ app.get("/blogs",function(req,res){
     });
 });
 
-
+app.get("/new",function(req,res){
+    res.render("new"); 
+});
+ 
+app.post("/blogs",function(req,res){
+    var title = req.body.title;
+    var desc = req.body.description;
+    var image = req.body.image;
+    var blog = {
+        title : title,
+        description : desc,
+        image : image
+    };
+    Blog.create(blog,function(err,blog){
+        if(err)
+            console.log(err);
+        else{
+            console.log("Blog created..!");
+             res.redirect('blogs');
+        }
+            
+    });
+});
 
 // creating server
 app.listen(3000, function(req,res){
