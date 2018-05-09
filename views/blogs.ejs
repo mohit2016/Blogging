@@ -1,0 +1,7 @@
+<h1>All Posts will be displayed here </h1>
+
+<% blogs.forEach(function(blog){ %>
+    <img src="<%=blog.image%>" />
+    <h2><%= blog.title %></h2>
+    <p><%= blog.description %></p>
+<% }); %>
