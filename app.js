@@ -2,9 +2,12 @@
 var express    = require('express'),
     mongoose   = require("mongoose"),
     bodyParser = require("body-parser"),
-    methodOverride = require("method-override");
+    methodOverride = require("method-override"),
+    Blog = require("./models/Blog"),
+    Comment = require("./models/Comment.js");
 
 var app = express();
+
 
 // Use EJS as viewing template 
 app.set('view engine','ejs');
@@ -15,16 +18,35 @@ mongoose.connect("mongodb://localhost/Blogging"); //Database Connection Call
 
 app.use(methodOverride('_method'));
 
-// Blog Schema
-var BlogSchema = new mongoose.Schema({
-    title : String,
-    description : String,
-    image : String
-});
 
-// Creating Model corresponding to the Schema
-var Blog =  mongoose.model("Blog", BlogSchema);
 
+// Blog.create({
+//     title : "First Blog",
+//     description : "I love my Blog website",
+//     image : "https://pixabay.com/get/ea36b30e2cf5013ed1584d05fb1d4e97e07ee3d21cac104497f6c17faeecb1bd_340.jpg",
+//     comments : []
+// },function(err,blog){
+//     if(err)
+//         console.log(err);
+//     else{
+//         Comment.create({
+//             text : "first comment",
+//             author : "mohit"   
+//         },function(err,comment){
+//             if(err)
+//                 console.log(err);
+//             else{
+//                 blog.comments.push(comment);
+//                 blog.save(function(err,blog){
+//                     if(err)
+//                         console.log(err);
+//                     else
+//                         console.log(blog);
+//                 });
+//             }         
+//         });
+//     }       
+// });
 
 // ==============
 //    ROUTES
@@ -47,7 +69,7 @@ app.get("/blogs",function(req,res){
 
 // Display form to create blog
 app.get("/new",function(req,res){
-    res.render("new"); 
+    res.render("Blogs/new"); 
 });
  
 // create new blog
@@ -73,11 +95,11 @@ app.post("/blogs",function(req,res){
 
 // Show a particular Blog
 app.get("/blogs/:id",function(req,res){
-    Blog.findById(req.params.id, function(err,blog){
+    Blog.findById(req.params.id).populate("comments").exec(function(err,blog){
         if(err)
             console.log(err);
         else
-            res.render("show", {blog : blog });
+            res.render("Blogs/show", {blog : blog});
     });    
 });
 
@@ -88,7 +110,7 @@ app.get("/blogs/:id/edit",function(req,res){
         if(err)
             console.log(err);
         else
-            res.render("edit", { blog : blog });
+            res.render("Blogs/edit", { blog : blog });
     });
 });
 
@@ -120,6 +142,49 @@ app.delete("/blogs/:id",function(req,res){
     });
 });
 
+
+// ==================
+// COMMENTS ROUTES
+// ================== 
+
+// Display new form to make a comment
+app.get("/blogs/:id/comments/new",function(req,res){
+    Blog.findById(req.params.id , function(err,blog){
+        if(err)
+            console.log(err);
+        else
+            res.render("Comments/new", {blog: blog});
+    });
+});
+
+
+// Create a new Comment Corresponding to a particular Blog
+app.post("/blogs/:id/comments",function(req,res){
+    var text = req.body.text;
+    var author = req.body.author;
+    var comment = {
+        text : text,
+        author : author
+    };
+    Blog.findById(req.params.id , function(err,blog){
+        if(err)
+            console.log(err);
+        else{
+            Comment.create(comment, function(err,comment){
+                blog.comments.push(comment);
+                blog.save(function(err,blog){
+                    if(err)
+                        console.log(err);
+                    else{
+                        console.log(blog);
+                         res.redirect('/blogs/'+ req.params.id);
+                    }
+                        
+                });
+            });
+        }
+    });
+});
 
 // creating server
 app.listen(3000, function(req,res){
