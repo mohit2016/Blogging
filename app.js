@@ -178,13 +178,47 @@ app.post("/blogs/:id/comments",function(req,res){
                     else{
                         console.log(blog);
                          res.redirect('/blogs/'+ req.params.id);
-                    }
-                        
+                    }   
                 });
             });
         }
     });
 });
+
+// Display a form to edit your comments
+app.get("/blogs/:blogid/comments/:commentid/edit",function(req,res){
+    Blog.findById(req.params.blogid,function(err,blog){
+        if(err)
+            console.log(err);
+        else{
+            Comment.findById(req.params.commentid,function(err,comment){
+                if(err)
+                    console.log(err);
+                else{
+                    res.render("comments/edit", {comment :comment , blog :blog});                
+                }
+                
+            });
+        }
+    }); 
+});
+
+// Update your comments
+app.put("/blogs/:blogid/comments/:commentid",function(req,res){
+    var text = req.body.text;
+    var author = req.body.author;
+    var comment = {
+        text : text,
+        author : author
+    };
+    Comment.findByIdAndUpdate(req.params.commentid, comment, function(err,comment){
+        if(err)
+            console.log(err);
+        else
+             res.redirect('/blogs/'+ req.params.blogid);
+    });
+});
+
 
 // creating server
 app.listen(3000, function(req,res){

@@ -12,6 +12,7 @@
 <a href ="/blogs/<%=blog._id%>/comments/new"> Add new comment </a> <br>
 
     <% blog.comments.forEach(function(comment){ %>
-            <strong> <%= comment.author %></strong> - <%= comment.text %> <br>
+            <strong> <%= comment.author %></strong> - <%= comment.text %>  
+            <a href= "/blogs/<%=blog._id%>/comments/<%=comment._id%>/edit"> Edit </a> <br>
     <% }); %>
 

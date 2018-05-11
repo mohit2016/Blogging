@@ -1,0 +1,6 @@
+<h1> Edit Comment </h1>
+<form action="/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=PUT" method="POST">
+    <input type="text" name = "text" value="<%=comment.text%>" />
+    <input type="text" name = "author" value="<%=comment.author%>"/>
+    <button>Update Comment</button>
+</form>
