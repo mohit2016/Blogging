@@ -219,6 +219,16 @@ app.put("/blogs/:blogid/comments/:commentid",function(req,res){
     });
 });
 
+// Delete Comments
+app.delete("/blogs/:blogid/comments/:commentid",function(req,res){
+    Comment.findByIdAndRemove(req.params.commentid,function(err,comment){
+        if(err)
+            console.log(err);
+        else
+             res.redirect('/blogs/' + req.params.blogid);
+    });
+});
+
 
 // creating server
 app.listen(3000, function(req,res){

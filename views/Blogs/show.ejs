@@ -13,6 +13,9 @@
 
     <% blog.comments.forEach(function(comment){ %>
             <strong> <%= comment.author %></strong> - <%= comment.text %>  
-            <a href= "/blogs/<%=blog._id%>/comments/<%=comment._id%>/edit"> Edit </a> <br>
+            <a href= "/blogs/<%=blog._id%>/comments/<%=comment._id%>/edit"> Edit </a> 
+            <form action= "/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=DELETE" method="post">
+                <button>Delete </button>
+            </form> <br>
     <% }); %>
 
