@@ -1,7 +1,10 @@
 <h1>All Posts will be displayed here </h1>
+<a href="/new"> Add new Blog </a> <hr> <br> <br>
 
 <% blogs.forEach(function(blog){ %>
     <img src="<%=blog.image%>" />
     <h2><%= blog.title %></h2>
     <p><%= blog.description %></p>
+    <a href="/blogs/<%= blog._id%>">Read more.. </a>
+    <br>
 <% }); %>

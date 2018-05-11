@@ -1,7 +1,8 @@
 // Import Necessary Files
 var express    = require('express'),
     mongoose   = require("mongoose"),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    methodOverride = require("method-override");
 
 var app = express();
 
@@ -12,6 +13,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 
 mongoose.connect("mongodb://localhost/Blogging"); //Database Connection Call
 
+app.use(methodOverride('_method'));
+
 // Blog Schema
 var BlogSchema = new mongoose.Schema({
     title : String,
@@ -21,19 +24,6 @@ var BlogSchema = new mongoose.Schema({
 
 // Creating Model corresponding to the Schema
 var Blog =  mongoose.model("Blog", BlogSchema);
-
-
-
-// Blog.create({
-//     title : "Second Post",
-//     description : "I am very confused what to write here",
-//     image : "https://pixabay.com/get/e835b2082bf3093ed1584d05fb1d4e97e07ee3d21cac104497f5c970a5eab0bc_340.jpg"
-// },function(err,blog){
-//     if(err)
-//         console.log(err);
-//     else
-//         console.log(blog);
-// });
 
 
 // ==============
@@ -55,10 +45,12 @@ app.get("/blogs",function(req,res){
     });
 });
 
+// Display form to create blog
 app.get("/new",function(req,res){
     res.render("new"); 
 });
  
+// create new blog
 app.post("/blogs",function(req,res){
     var title = req.body.title;
     var desc = req.body.description;
@@ -78,6 +70,56 @@ app.post("/blogs",function(req,res){
             
     });
 });
+
+// Show a particular Blog
+app.get("/blogs/:id",function(req,res){
+    Blog.findById(req.params.id, function(err,blog){
+        if(err)
+            console.log(err);
+        else
+            res.render("show", {blog : blog });
+    });    
+});
+
+
+// Edit form for Blog
+app.get("/blogs/:id/edit",function(req,res){
+    Blog.findById(req.params.id, function(err,blog){
+        if(err)
+            console.log(err);
+        else
+            res.render("edit", { blog : blog });
+    });
+});
+
+// Update Blogs
+app.put("/blogs/:id",function(req,res){
+    var title = req.body.title;
+    var desc = req.body.description;
+    var image = req.body.image;
+    var blog = {
+        title : title,
+        description : desc,
+        image : image
+    };
+    Blog.findByIdAndUpdate(req.params.id, blog, function(err,updatedblog){
+        if(err)
+            console.log(err);
+        else
+             res.redirect('/blogs/' + req.params.id);
+    }); 
+});
+
+// Delete Blog
+app.delete("/blogs/:id",function(req,res){
+    Blog.findByIdAndRemove(req.params.id, function(err,blog){
+        if(err)
+            console.log(err);
+        else
+             res.redirect('/blogs');
+    });
+});
+
 
 // creating server
 app.listen(3000, function(req,res){
