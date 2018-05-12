@@ -4,7 +4,11 @@ var express    = require('express'),
     bodyParser = require("body-parser"),
     methodOverride = require("method-override"),
     Blog = require("./models/Blog"),
-    Comment = require("./models/Comment.js");
+    Comment = require("./models/Comment"),
+    User = require("./models/User"),
+    Passport = require('passport'),
+    LocalStrategy = require('passport-local');
+
 
 var app = express();
 
@@ -12,12 +16,25 @@ var app = express();
 // Use EJS as viewing template 
 app.set('view engine','ejs');
 
+app.use(bodyParser.urlencoded({extended:true}));
+
 app.use(bodyParser.urlencoded({extended:false}));
 
 mongoose.connect("mongodb://localhost/Blogging"); //Database Connection Call
 
 app.use(methodOverride('_method'));
 
+app.use(require('express-session')({
+    secret : "Encode and Decode Password",
+    resave : false,
+    saveUninitialized : false
+}));
+app.use(Passport.initialize());
+app.use(Passport.session());
+
+Passport.use(new LocalStrategy(User.authenticate()));
+Passport.serializeUser(User.serializeUser);
+Passport.deserializeUser(User.deserializeUser);
 
 
 // Blog.create({
@@ -49,7 +66,7 @@ app.use(methodOverride('_method'));
 // });
 
 // ==============
-//    ROUTES
+//  BLOGS  ROUTES
 // ============== 
 
 // index route
@@ -229,6 +246,29 @@ app.delete("/blogs/:blogid/comments/:commentid",function(req,res){
     });
 });
 
+
+// ==============
+//  AUTH  ROUTES
+// ============== 
+
+// Display a Register form to signup
+app.get("/register",function(req,res){
+    res.render("Auth/register");
+});
+
+
+// Register a User to Database
+app.post("/register",function(req,res){
+    User.register(new User({username: req.body.username}), req.body.password, function(err,user){
+        if(err){
+            console.log(err);
+            return res.redirect("/register");
+        }
+            Passport.authenticate("local")(req,res,function(){
+                res.render("blogs");
+        });
+    });
+});
 
 // creating server
 app.listen(3000, function(req,res){
