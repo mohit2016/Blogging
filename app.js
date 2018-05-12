@@ -6,35 +6,38 @@ var express    = require('express'),
     Blog = require("./models/Blog"),
     Comment = require("./models/Comment"),
     User = require("./models/User"),
-    Passport = require('passport'),
-    LocalStrategy = require('passport-local');
+    passport = require("passport"),
+    passportLocal = require("passport-local");
+
 
 
 var app = express();
 
+mongoose.connect("mongodb://localhost/Blogging"); //Database Connection Call
 
 // Use EJS as viewing template 
 app.set('view engine','ejs');
 
-app.use(bodyParser.urlencoded({extended:true}));
+// app.use(bodyParser.urlencoded({extended:true}));
+app.use(require('body-parser').urlencoded({ extended: true }));
 
-app.use(bodyParser.urlencoded({extended:false}));
 
-mongoose.connect("mongodb://localhost/Blogging"); //Database Connection Call
+
 
 app.use(methodOverride('_method'));
 
-app.use(require('express-session')({
-    secret : "Encode and Decode Password",
-    resave : false,
-    saveUninitialized : false
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(require("express-session")({
+    secret : "This string is used to encode and decode the password",
+    resave: false,
+    saveUninitialized:false
 }));
-app.use(Passport.initialize());
-app.use(Passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
-Passport.use(new LocalStrategy(User.authenticate()));
-Passport.serializeUser(User.serializeUser);
-Passport.deserializeUser(User.deserializeUser);
+passport.use(new passportLocal(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 // Blog.create({
@@ -80,17 +83,17 @@ app.get("/blogs",function(req,res){
         if(err)
             console.log(err);
         else
-            res.render("blogs.ejs" ,{blogs : blogs});
+            res.render("blogs" ,{blogs : blogs});
     });
 });
 
 // Display form to create blog
-app.get("/new",function(req,res){
+app.get("/new", isLoggedIn ,function(req,res){
     res.render("Blogs/new"); 
 });
  
 // create new blog
-app.post("/blogs",function(req,res){
+app.post("/blogs", isLoggedIn ,function(req,res){
     var title = req.body.title;
     var desc = req.body.description;
     var image = req.body.image;
@@ -122,7 +125,7 @@ app.get("/blogs/:id",function(req,res){
 
 
 // Edit form for Blog
-app.get("/blogs/:id/edit",function(req,res){
+app.get("/blogs/:id/edit",isLoggedIn,function(req,res){
     Blog.findById(req.params.id, function(err,blog){
         if(err)
             console.log(err);
@@ -132,7 +135,7 @@ app.get("/blogs/:id/edit",function(req,res){
 });
 
 // Update Blogs
-app.put("/blogs/:id",function(req,res){
+app.put("/blogs/:id",isLoggedIn,function(req,res){
     var title = req.body.title;
     var desc = req.body.description;
     var image = req.body.image;
@@ -150,7 +153,7 @@ app.put("/blogs/:id",function(req,res){
 });
 
 // Delete Blog
-app.delete("/blogs/:id",function(req,res){
+app.delete("/blogs/:id",isLoggedIn,function(req,res){
     Blog.findByIdAndRemove(req.params.id, function(err,blog){
         if(err)
             console.log(err);
@@ -165,7 +168,7 @@ app.delete("/blogs/:id",function(req,res){
 // ================== 
 
 // Display new form to make a comment
-app.get("/blogs/:id/comments/new",function(req,res){
+app.get("/blogs/:id/comments/new",isLoggedIn,function(req,res){
     Blog.findById(req.params.id , function(err,blog){
         if(err)
             console.log(err);
@@ -176,7 +179,7 @@ app.get("/blogs/:id/comments/new",function(req,res){
 
 
 // Create a new Comment Corresponding to a particular Blog
-app.post("/blogs/:id/comments",function(req,res){
+app.post("/blogs/:id/comments",isLoggedIn,function(req,res){
     var text = req.body.text;
     var author = req.body.author;
     var comment = {
@@ -203,7 +206,7 @@ app.post("/blogs/:id/comments",function(req,res){
 });
 
 // Display a form to edit your comments
-app.get("/blogs/:blogid/comments/:commentid/edit",function(req,res){
+app.get("/blogs/:blogid/comments/:commentid/edit",isLoggedIn,function(req,res){
     Blog.findById(req.params.blogid,function(err,blog){
         if(err)
             console.log(err);
@@ -221,7 +224,7 @@ app.get("/blogs/:blogid/comments/:commentid/edit",function(req,res){
 });
 
 // Update your comments
-app.put("/blogs/:blogid/comments/:commentid",function(req,res){
+app.put("/blogs/:blogid/comments/:commentid",isLoggedIn,function(req,res){
     var text = req.body.text;
     var author = req.body.author;
     var comment = {
@@ -237,7 +240,7 @@ app.put("/blogs/:blogid/comments/:commentid",function(req,res){
 });
 
 // Delete Comments
-app.delete("/blogs/:blogid/comments/:commentid",function(req,res){
+app.delete("/blogs/:blogid/comments/:commentid",isLoggedIn,function(req,res){
     Comment.findByIdAndRemove(req.params.commentid,function(err,comment){
         if(err)
             console.log(err);
@@ -253,9 +256,8 @@ app.delete("/blogs/:blogid/comments/:commentid",function(req,res){
 
 // Display a Register form to signup
 app.get("/register",function(req,res){
-    res.render("Auth/register");
+    res.render("Auth/register");    
 });
-
 
 // Register a User to Database
 app.post("/register",function(req,res){
@@ -264,11 +266,42 @@ app.post("/register",function(req,res){
             console.log(err);
             return res.redirect("/register");
         }
-            Passport.authenticate("local")(req,res,function(){
-                res.render("blogs");
+            passport.authenticate("local")(req,res,function(){
+                res.redirect("/blogs");
         });
     });
 });
+
+
+// Display a form to login
+
+app.get("/login",function(req,res){
+    res.render("Auth/login");
+});
+
+
+// Check for Login
+app.post("/login",passport.authenticate("local",{
+    successRedirect : "/blogs",
+    failureRediriect : "/login"
+}), function(req,res){
+});
+
+// Logout
+app.get("/logout",function(req,res){
+    req.logout();
+    res.redirect("/");
+});
+
+
+// This is middleware to check wether user is login or not
+function isLoggedIn(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+        return res.redirect("/login");
+}
+
 
 // creating server
 app.listen(3000, function(req,res){
