@@ -1,7 +1,9 @@
 <h1><%= blog.title %></h1>
-<img src="<%=blog.image%>" />
-<p><%= blog.description %></p>
 
+<img src="<%=blog.image%>" /> <br>
+<em> - Created by <strong> <%=blog.author.username%> </strong></em> <br>
+<p><%= blog.description %></p>
+<p><%= blog.date.toDateString() %> </p>
 <a href= "/blogs/<%=blog._id%>/edit"> Edit Post </a>
 <form action="/blogs/<%=blog._id%>?_method=DELETE" method="POST">
     <button>Delete Blog</button>
@@ -12,7 +14,7 @@
 <a href ="/blogs/<%=blog._id%>/comments/new"> Add new comment </a> <br>
 
     <% blog.comments.forEach(function(comment){ %>
-            <strong> <%= comment.author %></strong> - <%= comment.text %>  
+            <strong> <%= comment.author.username %></strong> - <%= comment.text %>  
             <a href= "/blogs/<%=blog._id%>/comments/<%=comment._id%>/edit"> Edit </a> 
             <form action= "/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=DELETE" method="post">
                 <button>Delete </button>

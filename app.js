@@ -94,13 +94,19 @@ app.get("/new", isLoggedIn ,function(req,res){
  
 // create new blog
 app.post("/blogs", isLoggedIn ,function(req,res){
+    
     var title = req.body.title;
     var desc = req.body.description;
     var image = req.body.image;
+    var author = {
+        id  : req.user._id,
+        username : req.user.username
+    };
     var blog = {
         title : title,
         description : desc,
-        image : image
+        image : image,
+        author : author
     };
     Blog.create(blog,function(err,blog){
         if(err)
@@ -181,7 +187,10 @@ app.get("/blogs/:id/comments/new",isLoggedIn,function(req,res){
 // Create a new Comment Corresponding to a particular Blog
 app.post("/blogs/:id/comments",isLoggedIn,function(req,res){
     var text = req.body.text;
-    var author = req.body.author;
+    var author = {
+        id  : req.user._id,
+        username : req.user.username
+    };
     var comment = {
         text : text,
         author : author
@@ -196,7 +205,7 @@ app.post("/blogs/:id/comments",isLoggedIn,function(req,res){
                     if(err)
                         console.log(err);
                     else{
-                        console.log(blog);
+                        
                          res.redirect('/blogs/'+ req.params.id);
                     }   
                 });
@@ -226,7 +235,10 @@ app.get("/blogs/:blogid/comments/:commentid/edit",isLoggedIn,function(req,res){
 // Update your comments
 app.put("/blogs/:blogid/comments/:commentid",isLoggedIn,function(req,res){
     var text = req.body.text;
-    var author = req.body.author;
+    var author = {
+        id  : req.user._id,
+        username : req.user.username
+    };
     var comment = {
         text : text,
         author : author
