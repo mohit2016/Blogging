@@ -145,10 +145,15 @@ app.put("/blogs/:id",isLoggedIn,function(req,res){
     var title = req.body.title;
     var desc = req.body.description;
     var image = req.body.image;
+    var author = {
+        id  : req.user._id,
+        username : req.user.username
+    };
     var blog = {
         title : title,
         description : desc,
-        image : image
+        image : image,
+        author : author, 
     };
     Blog.findByIdAndUpdate(req.params.id, blog, function(err,updatedblog){
         if(err)
