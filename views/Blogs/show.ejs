@@ -2,7 +2,7 @@
 
 <img src="<%=blog.image%>" /> <br>
 <em> - Created by <strong> <%=blog.author.username%> </strong></em> <br>
-<p><%= blog.description %></p>
+<p><%= blog.description%></p>
 <p><%= blog.date.toDateString() %> </p>
 <a href= "/blogs/<%=blog._id%>/edit"> Edit Post </a>
 <form action="/blogs/<%=blog._id%>?_method=DELETE" method="POST">

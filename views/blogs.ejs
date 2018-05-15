@@ -13,7 +13,7 @@
 <% blogs.forEach(function(blog){ %>
     <img src="<%=blog.image%>" />
     <h2><%= blog.title %></h2>
-    <p><%= blog.description %></p>
+    <p><%= blog.description.substr(0,100)+"......"  %></p>
     <a href="/blogs/<%= blog._id%>">Read more.. </a>
     <br>
 <% }); %>
