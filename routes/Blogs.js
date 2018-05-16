@@ -65,17 +65,17 @@ router.get("/blogs/:id",function(req,res){
 
 
 // Edit form for Blog
-router.get("/blogs/:id/edit",isLoggedIn,function(req,res){
-    Blog.findById(req.params.id, function(err,blog){
-        if(err)
-            console.log(err);
-        else
-            res.render("Blogs/edit", { blog : blog });
-    });
+router.get("/blogs/:id/edit" , checkBlogOwnership ,function(req,res){
+ 
+        Blog.findById(req.params.id, function(err,blog){
+                   res.render("Blogs/edit", { blog : blog });
+        
+        });
 });
 
+
 // Update Blogs
-router.put("/blogs/:id",isLoggedIn,function(req,res){
+router.put("/blogs/:id",checkBlogOwnership,function(req,res){
     var title = req.body.title;
     var desc = req.body.description;
     var image = req.body.image;
@@ -98,7 +98,7 @@ router.put("/blogs/:id",isLoggedIn,function(req,res){
 });
 
 // Delete Blog
-router.delete("/blogs/:id",isLoggedIn,function(req,res){
+router.delete("/blogs/:id",checkBlogOwnership,function(req,res){
     Blog.findByIdAndRemove(req.params.id, function(err,blog){
         if(err)
             console.log(err);
@@ -117,5 +117,25 @@ function isLoggedIn(req,res,next){
         return res.redirect("/login");
 }
 
+// Check if user really own this Blog
+function checkBlogOwnership(req,res,next){
+    // check if someone is loged in
+    if(req.isAuthenticated()){
+        Blog.findById(req.params.id, function(err,blog){
+            if(err)
+                console.log(err);
+            else{              
+                // check if the author owns the Blog
+                if(blog.author.id.equals(req.user._id)){
+                    next();
+                }else{
+                    res.send("You don't have permission to do that");
+                }
+            }
+        });
+    }else{
+        res.send('You need to login first');
+    }
+}
 
 module.exports = router;

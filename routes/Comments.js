@@ -49,7 +49,7 @@ router.post("/blogs/:id/comments",isLoggedIn,function(req,res){
 });
 
 // Display a form to edit your comments
-router.get("/blogs/:blogid/comments/:commentid/edit",isLoggedIn,function(req,res){
+router.get("/blogs/:blogid/comments/:commentid/edit",checkCommentOwnership,function(req,res){
     Blog.findById(req.params.blogid,function(err,blog){
         if(err)
             console.log(err);
@@ -67,7 +67,7 @@ router.get("/blogs/:blogid/comments/:commentid/edit",isLoggedIn,function(req,res
 });
 
 // Update your comments
-router.put("/blogs/:blogid/comments/:commentid",isLoggedIn,function(req,res){
+router.put("/blogs/:blogid/comments/:commentid",checkCommentOwnership,function(req,res){
     var text = req.body.text;
     var author = {
         id  : req.user._id,
@@ -86,7 +86,7 @@ router.put("/blogs/:blogid/comments/:commentid",isLoggedIn,function(req,res){
 });
 
 // Delete Comments
-router.delete("/blogs/:blogid/comments/:commentid",isLoggedIn,function(req,res){
+router.delete("/blogs/:blogid/comments/:commentid",checkCommentOwnership,function(req,res){
     Comment.findByIdAndRemove(req.params.commentid,function(err,comment){
         if(err)
             console.log(err);
@@ -103,5 +103,27 @@ function isLoggedIn(req,res,next){
     }
         return res.redirect("/login");
 }
+
+// Check if the user really own this comment
+function checkCommentOwnership(req,res,next){
+    // check if someone is loged in
+    if(req.isAuthenticated()){
+        Comment.findById(req.params.commentid, function(err,comment){
+            if(err)
+                console.log(err);
+            else{              
+                // check if the author made this comment
+                if(comment.author.id.equals(req.user._id)){
+                    next();
+                }else{
+                    res.send("You don't have permission to do that");
+                }
+            }
+        });
+    }else{
+        res.send('You need to login first');
+    }
+}
+
 
 module.exports = router;
