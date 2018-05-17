@@ -38,6 +38,11 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(function(req,res,next){
+    res.locals.currentUser = req.user;
+    next(); 
+});
+
 passport.use(new passportLocal(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -70,6 +75,9 @@ passport.deserializeUser(User.deserializeUser());
 //         });
 //     }       
 // });
+
+
+
 
 app.use("/",blogs);
 app.use("/",comments);

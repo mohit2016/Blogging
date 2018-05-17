@@ -6,6 +6,9 @@ const router = express.Router();
 //  BLOGS  ROUTES
 // ============== 
 
+
+
+
 // index route
 router.get("/",function(req,res){
     res.send("Welcome to the blogging website");
@@ -13,6 +16,7 @@ router.get("/",function(req,res){
 
 // Blogs route
 router.get("/blogs",function(req,res){
+    
     Blog.find({},function(err,blogs){
         if(err)
             console.log(err);

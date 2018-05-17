@@ -1,13 +1,20 @@
+<% include ../partials/header %>
+
 <h1><%= blog.title %></h1>
 
 <img src="<%=blog.image%>" /> <br>
 <em> - Created by <strong> <%=blog.author.username%> </strong></em> <span>on <b> <%= blog.date.toDateString() %></b> </span>  <br>
 <p><%= blog.description%></p>
 <p></p>
-<a href= "/blogs/<%=blog._id%>/edit"> Edit Post </a>
-<form action="/blogs/<%=blog._id%>?_method=DELETE" method="POST">
-    <button>Delete Blog</button>
-</form>
+
+<% if(currentUser && blog.author.id.equals(currentUser.id)){ %>
+    <a href= "/blogs/<%=blog._id%>/edit"> Edit Post </a>
+    <form action="/blogs/<%=blog._id%>?_method=DELETE" method="POST">
+        <button>Delete Blog</button>
+    </form>
+<% } %>
+
+
 
 <h2> Comments </h2>
 
@@ -15,9 +22,11 @@
 
     <% blog.comments.forEach(function(comment){ %>
             <strong> <%= comment.author.username %></strong> - <%= comment.text %>  
-            <a href= "/blogs/<%=blog._id%>/comments/<%=comment._id%>/edit"> Edit </a> 
-            <form action= "/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=DELETE" method="post">
-                <button>Delete </button>
-            </form> <br>
+            <% if(currentUser && comment.author.id.equals(currentUser.id)){ %>
+                <a href= "/blogs/<%=blog._id%>/comments/<%=comment._id%>/edit"> Edit </a> 
+                <form action= "/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=DELETE" method="post">
+                    <button>Delete </button>
+                </form> <br>
+            <% } %>
     <% }); %>
 
