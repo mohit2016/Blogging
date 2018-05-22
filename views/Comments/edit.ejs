@@ -1,5 +1,18 @@
-<h1> Edit Comment </h1>
-<form action="/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=PUT" method="POST">
-    <input type="text" name = "text" value="<%=comment.text%>" />
-    <button>Update Comment</button>
+<% include ../partials/header %>
+
+
+<h1 class="center"> Edit Comment </h1>
+
+
+<form action="/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=PUT" method="POST" class="center">
+    <div class="form-group">
+        <label for="text">Text:</label>
+        <input class="form-control" type="text" name = "text" value="<%=comment.text%>" />
+    </div>
+    
+    <button class="btn btn-success">Update Comment</button>
 </form>
+
+
+
+<% include ../partials/footer %>
