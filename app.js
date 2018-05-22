@@ -28,6 +28,7 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 
 
 app.use(methodOverride('_method'));
+app.use(express.static("public")); 
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(require("express-session")({
