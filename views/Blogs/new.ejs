@@ -1,6 +1,24 @@
-<form action="/blogs" method="POST">
-    <input type="text" name = "title" placeholder="Title"/>
-    <input type="text" name = "description" placeholder="Description"/>
-    <input type="text" name = "image" placeholder="Image URL"/>
-    <button>Add Blog</button>
+<% include ../partials/header %>
+<h1 class="center">Add new Blog</h1>
+<hr class="center">
+
+<form action="/blogs" method="POST" class="center">
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" class="form-control"  name = "title" placeholder="Title"/>
+    </div>
+    <div class="form-group">
+        <label for="title">Description:</label>
+        <input type="text" class="form-control" name = "description" placeholder="Description"/>
+    </div>
+    <div class="form-group">
+        <label for="title">Image:</label>
+        <input type="text" class="form-control" name = "image" placeholder="Image URL"/>
+    </div>
+    
+    
+    
+    <button class="btn btn-success">Add Blog</button>
 </form>
+
+<% include ../partials/footer %>

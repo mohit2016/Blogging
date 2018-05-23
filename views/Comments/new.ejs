@@ -1,6 +1,15 @@
+<% include ../partials/header %>
 
-<h2> Add new Comment to  <%=blog.title%></h2>
-<form action="/blogs/<%=blog._id%>/comments" method="POST">
-    <input type="text" name = "text" placeholder="Text"/>
-    <button>Add Comment</button>
+<h2 class="center"> Add new Comment to  <%=blog.title%></h2>
+<hr class="center">
+
+<form action="/blogs/<%=blog._id%>/comments" method="POST" class="center">
+    <div class="from-group">
+        <label for="text">Text:</label>
+        <input type="text" class="form-control" name = "text" placeholder="Text"/>
+    </div><br>
+    <button class="btn btn-primary">Add Comment</button>
 </form>
+
+
+<% include ../partials/footer %>
