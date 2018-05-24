@@ -1,19 +1,15 @@
 <% include ./partials/header %>
 
-<h1>All Blogs will be displayed here </h1>
-
-
-<br>
-<br>
 
 
 <% blogs.forEach(function(blog){ %>
-    <img src="<%=blog.image%>" />
-    <h2><%= blog.title %></h2>
-    <p><%= blog.description.substr(0,100)+"......"  %></p>
-    <a href="/blogs/<%= blog._id%>">Read more.. </a>
-    <br>
+    <div class="well center clearfix">
+        <h2><%= blog.title %></h2>
+        <img class="img-responsive" src="<%=blog.image%>" />
+        <p><em>- by <%= blog.author.username %> on <%= blog.date.toDateString() %></em></p>
+        <p><%= blog.description.substr(0,100)+"......"  %></p>
+        <a href="/blogs/<%= blog._id%>">Read more.. </a>
+    </div>
 <% }); %>
-
 
 <% include ./partials/footer %>

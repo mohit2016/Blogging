@@ -11,7 +11,7 @@ const router = express.Router();
 
 // index route
 router.get("/",function(req,res){
-    res.send("Welcome to the blogging website");
+    res.render("index");
 });
 
 // Blogs route
