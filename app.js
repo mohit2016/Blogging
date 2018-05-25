@@ -26,19 +26,24 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 
 
 
-
+// to use method Override
 app.use(methodOverride('_method'));
+// can use public directory now
 app.use(express.static("public")); 
 
+// body parser
 app.use(bodyParser.urlencoded({extended:true}));
+// enable express-session
 app.use(require("express-session")({
     secret : "This string is used to encode and decode the password",
     resave: false,
     saveUninitialized:false
 }));
+// authentication in use
 app.use(passport.initialize());
 app.use(passport.session());
 
+// currentUser var is available to complete app
 app.use(function(req,res,next){
     res.locals.currentUser = req.user;
     next(); 
@@ -79,7 +84,7 @@ passport.deserializeUser(User.deserializeUser());
 
 
 
-
+// These are routes
 app.use("/",blogs);
 app.use("/",comments);
 app.use("/",auths);
