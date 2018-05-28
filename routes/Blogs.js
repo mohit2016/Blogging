@@ -118,6 +118,7 @@ function isLoggedIn(req,res,next){
     if(req.isAuthenticated()){
         return next();
     }
+        req.flash("error","You need to login to do that");
         return res.redirect("/login");
 }
 
@@ -133,12 +134,14 @@ function checkBlogOwnership(req,res,next){
                 if(blog.author.id.equals(req.user._id)){
                     next();
                 }else{
-                    res.send("You don't have permission to do that");
+                    req.flash("error","You don't have permission to do that");
+                    res.redirect("back");
                 }
             }
         });
     }else{
-        res.send('You need to login first');
+         req.flash("error","You need to login to do that");
+         res.redirect('back');
     }
 }
 

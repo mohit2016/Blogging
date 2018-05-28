@@ -10,7 +10,8 @@ var express    = require('express'),
     passportLocal = require("passport-local"),
     comments = require("./routes/Comments"),
     blogs = require("./routes/Blogs"),
-    auths = require("./routes/Auths");
+    auths = require("./routes/Auths"),
+    flash = require("connect-flash");
 
 
 
@@ -25,6 +26,8 @@ app.set('view engine','ejs');
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 
+// use flash 
+app.use(flash());
 
 // to use method Override
 app.use(methodOverride('_method'));
@@ -46,6 +49,8 @@ app.use(passport.session());
 // currentUser var is available to complete app
 app.use(function(req,res,next){
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
     next(); 
 });
 

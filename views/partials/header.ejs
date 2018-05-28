@@ -44,3 +44,14 @@
                   </div>
                 </div>
         </nav>
+        <% if(error && error.length >0){%>
+          <div class="alert alert-danger container">
+              <%= error%>
+          </div>
+        <%}%>
+        
+        <% if(success && success.length >0){%>
+          <div class="alert alert-success container">
+            <%= success%>
+          </div>
+        <%}%>

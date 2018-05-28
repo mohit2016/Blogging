@@ -16,10 +16,11 @@ router.get("/register",function(req,res){
 router.post("/register",function(req,res){
     User.register(new User({username: req.body.username}), req.body.password, function(err,user){
         if(err){
-            console.log(err);
+            req.flash("error",err.message);
             return res.redirect("/register");
         }
             passport.authenticate("local")(req,res,function(){
+                req.flash("success","Welcome to Website "+ user.username);
                 res.redirect("/blogs");
         });
     });
@@ -28,7 +29,7 @@ router.post("/register",function(req,res){
 
 // Display a form to login
 
-router.get("/login",function(req,res){
+router.get("/login",function(req,res){ 
     res.render("Auth/login");
 });
 
@@ -43,16 +44,9 @@ router.post("/login",passport.authenticate("local",{
 // Logout
 router.get("/logout",function(req,res){
     req.logout();
+    req.flash("success","Logged you out");
     res.redirect("/blogs");
 });
 
-
-// This is middleware to check wether user is login or not
-function isLoggedIn(req,res,next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-        return res.redirect("/login");
-}
 
 module.exports = router;
